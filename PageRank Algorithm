@@ -1,0 +1,111 @@
+PageRank Algorithm
+
+
+	The basis of Googles PageRank System
+		-originally developed as a backrub (Original google research paper, still used but other signals from the content are also used)
+
+		-simulates a random walk accross the web and computes the score of a page as the probability of visting that page.
+		(NY times homepage, randomly click links, what is the probability of ending up at a cat video. defined by the number of links linking to that page)
+		Number of incoming links to a site influences the probability of ending up on that page.
+
+		-a page has a high rank if the sum of the ranks of pages pointing at it is high
+			-many pages or several highly ranked pages ( if you had a high volume of linking pages or pages with high score linking to you, both could be a similar score)
+
+		The random or very bored, surfer
+			-Molly v bored, browses aimlessly between pages.
+			-browser has special surprise me button.
+			-jumps to random page on internet.
+			-Molly chooses surprise me or random link on the page.
+			-Molly has no preference and picks a random link
+			-Molly browses the internet forever until she visits every site and then repeats.
+			-This is the pagerank algorithm.
+			-Molly much more likely to click the link than "surprise me button"
+			-even though random, she'll see popular pages more often than unpopular as more links to them.
+
+
+		-The surprise me button, guarentees that every page on the web will be visited, eventually
+		-The surfer plans to browse the web for a very long time, and since the number of wbe pages is finite, every page will be visited a very large number of times.
+			-likely that popular website will be visited more than unpopular (popular=number of incoming links)
+		 Formal def:
+		 	Find the stationary prob distribution of a random walk on the graph of the web.
+		 	-a random walk is a special case of a Markov chain in which the next state(the next page visisted) depends solely on the current state (current page)
+		 -Transistions allowed between states are all equally probable and are given by the links (top of the page vs bottom or links you know are not given higher preference)
+		 -The surprise me button makes the model an ergodic markov chain
+
+
+		 Example:
+		 	3 web pages : A,B,C
+		 	A links to B
+		 	A links to C
+		 	C links to A
+		 	B links to C
+
+		 	Page rank of C, will depend on the page rank of A and B
+		 	Molly chooses between links randomly, if she starts at A, 50% she will end up on page C.
+		 	Pagerank of A is divided between all outgoing links on that page.
+
+**diageam on slides listing algo and maths
+		 	Pagerank of C = Pagerank of A / 2 {two out going links} + pagerank of B / 1 {one outgoing link}
+
+
+PAge rank of all pages: 1/3 = 0.33
+
+PR(C) = 0.33/2 + 0.33/1 = 0.5        //PR(C) = PR(A)/ outgoing links (2) + PR(B) / outgoing links (1)
+	= page rank / number of outgoing links
+
+PR(A) = 0.33/1 = 0.33     //PR(A) = PR(C)/ outgoing links ()
+
+do an entire iteration for every page, based on current value before using updated value. ( hence using 0.33 for PR(C) instead of updated 0.5)
+
+PR(B) = 0.33/2 = 0.33     //PR(B) = PR(A)/ outgoing links (2)
+
+
+Keep doing iterations until very little chance occurs and the changes minimise.
+ PR(C) =0.33/2 + 0.17/1 =0.33
+ PR(A) =0.5/1 = 0.5
+ PR(B) = 0.33/2 = 0.17
+
+If you add an aditional page at any further iteration, use an initial value for the new page and include in the update sums.
+
+
+	-Taking the surprise me button into account
+		-part of the pagerank for page c will be the prob of visiting that page by pushing the button,
+		-in tthis exampe, there is 1/3 chance of going to any page when the button is pushed, the contributin will be lambda/3
+
+		lambda is usualy 0.15
+
+		Prob of pressing lamabda is lambda/3  //because 3 pages total
+
+		PR(C) = lambda/3 + ((1- lambda) * PR(A)/2 + PR(B)/1) 		// 1-lambda is the prob of followning a link to a random page that's not via the surprise me button.
+
+	NB PR summary in slides **
+
+	Retrieval model gets the topical pages (e.g 200 pages) and pagerank adjusts the most important of those 200 in order
+
+
+Example question:
+	A->B 			Starting value: 1/4 = 0.25
+	B-> A,C,D 		lambda = 0.15
+	C->A,D
+	D->B
+
+	PR(A) = 0.15/4 + ((1-0.15) * (0.25/3 + 0.25/2))
+		  = 0.037 +((0.85)*(0.08+0.125))
+		  = 0.21
+
+	PR(B) = 0.037 +((0.85) * (0.25/1 + 0.25/1))
+		  = 0.037 + (0.85 *0.5)
+		  = 0.46
+
+	PR(C) = 0.1
+
+	PR(D) = 0.21
+
+	........
+
+	PR(A) = 0.22
+	PR(B) = 0.38
+	PR(C) = 0.15
+	PR(D) = 0.21
+
+	(In exam will never calc till normalisation - only a few updates)
