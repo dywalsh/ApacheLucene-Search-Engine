@@ -1,0 +1,64 @@
+Info Retrieval - lecture 12
+
+Ranking with Indexes
+
+Data Structures
+	Storing a list of items
+		-Linked List
+		-Array
+
+	Find item based ipon an attribute
+		-Hash Table
+
+	More complex tasks
+		-B trees
+		-Priority Queues
+
+	Text Search is different from traditional computing tasks
+		-has its own kind of data structure
+		-Inverted Index
+
+		umbrella term for a range of diff, yet similar, data strucutres
+		
+	Ranking with Indexes
+	-chicken and egg approach
+	-query algorithm will depend on the retrieval model you use, will influence index
+	-same in reverse
+
+	Abstract model of ranking(high level overview of what abstract ranking means)
+		-take a text doc
+		-transformed into index terms or doc features
+			-topicial doc features
+				-topic of the content, degree to which a doc is about a certain subject
+			-quality doc features
+				-pieces of info that you have about a doc, that is not related to the content of the doc
+					-e.g num of days since last updated
+					-how accessible the page is
+					-how many pages link to the page
+					-similar to page rank(score associated with the page based on popularity not the content)
+		-ranking function combines with the query, topical features and quality features -> does "magic" and spits out document score
+			-R(Q,D) = SUM fi(D)gi(Q) // Q=query, D=document
+
+		Inverted Index
+			-all modern search engines follow this -> pretty much the index at the back of a text book
+				-e,g Chinese food, 6-9, 39, 203, 212-245, 389 etc
+				-search engine index is the same as the above, however instead of page numbers, its documents that the query occurs in.
+				-inverted because usually words are thought of as a part of doc.
+					-if we invert this, docs are associated with words.
+				-Index terms often alphabetised.
+
+			-in a search engine, that data associated with each term might be a list of docs or a list of word occurences.
+			-each list entry is called a posting
+				-the part of the posting that refers to a specific doc is 
+
+
+
+				???
+
+
+
+			-inverted indexes - doc ordered lists follow the same principle of textbook indexes where the smallest page number comes first, the smallest doc number comes first instead.
+			-Document indexes
+				-the simplest form of an inverted list stores just the documents that contain each word
+
+

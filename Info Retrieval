@@ -1,0 +1,96 @@
+Info Retrieval
+
+Apache Lucene Tutorial:
+
+-Java Library
+	-search library: indexing and searching API
+	-full text search engine
+	-high performance
+	-scalable
+	-100% pure java
+
+	-query syntax built in
+
+
+2 modes:
+	input doc -> (write a program to take doc as input) -> save to index
+	?
+
+	Documents can be broken up into smaller parts and rank the parts e.g title, content, abstract etc
+
+	lucene: text field and string field -> no processing happens on a string field.
+	text field -> stemming, stop word removal etc
+
+	field comprised of 3 parts : name type value(text,binary,numeric)
+
+	a field may be stored in the index (TYPE_STORED)
+
+	lots of field constructors
+
+	Field(String name, String value, FieldType Type)
+
+
+
+Java lucene program:
+
+	builds index, adds doc to it and a
+
+Analyzer analyzer = new StandardAnalyzer(); // this will convert text to lower case etc before added to index
+	select directory to store index
+	create index config (how the index should be created and the type of analysis on content)
+	create writer
+	create documents
+		add fields to doc
+	write doc to index
+	close writer
+	close document
+
+
+	arraylist of docs for multiple docs
+
+	use a for loop over the input docs and store docs before closing 
+
+
+Lucene creates output index files (gibberish numbers)
+
+
+Tokenizations: split text in token
+
+stopword elim: remove common works and closed word class
+
+stemming: reducing infected words to their stem
+
+
+Text analysis:
+	analyzer: wrapper class
+		tokenizer is a token stream
+
+
+Lucence out of box analyzer:
+	keyword analyzer returns single token
+
+	whitespace
+		split whitespace
+
+		simple
+		dividers text a non letter chars and lowercases
+
+		stop
+		divides text at non letter chars and lowerscases etc
+
+		standard analyzer
+
+
+
+
+
+Lucene Search:
+
+IndexReader -> open index get docs back out
+Query parser optional
+
+indexsearcher: implements search over a single indexReader
+s	coreDocs returns an array of retrieved docs(ScoreDoc)
+
+
+

@@ -190,7 +190,20 @@ public class IndexFiles {
       // so that the text of the file is tokenized and indexed, but not stored.
       // Note that FileReader expects the file to be in UTF-8 encoding.
       // If that's not the case searching for special characters will fail.
-      doc.add(new TextField("contents", new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))));
+     // doc.add(new TextField("contents", new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))));
+
+      BufferedReader br = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
+      String temp;
+     // String pattern = "^.I\\s\\d";
+      while( (temp = br.readLine()) != null ){
+	//System.out.println(temp);
+	if(temp.substring(0,2).equals(".I")){
+	System.out.println(temp);
+	}
+	
+	
+      }
+
       
       if (writer.getConfig().getOpenMode() == OpenMode.CREATE) {
         // New index, so we just add the document (no old document can be there):
