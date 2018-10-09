@@ -60,5 +60,70 @@ Data Structures
 			-inverted indexes - doc ordered lists follow the same principle of textbook indexes where the smallest page number comes first, the smallest doc number comes first instead.
 			-Document indexes
 				-the simplest form of an inverted list stores just the documents that contain each word
+				-
+
+				????
+
+
+
+			Scoring
+			-consider the query: tropical fish -> fish 1,2,3
+												->tropical 1,2,3
+			-there is no way of discriminating between docs 1,2 and 3
+			-Extened Index
+				-term freq - num of times the term exists in the doc
+
+					query "tropical fish" with term freqy: fish -> 1:2, 2:3, 3:2
+							tropical-> 1:2, 2:2, 3:2
+
+						hence document 2 has to most occurences (3), so most likely
+				-term position
+					-further facilitates discrimination
+					-phrase identification
+
+
+				-feature weighting: taking into account of characteristics of the doc or 
+					-words dont have to occur in a doc or query to get a feature weight e.g fish is a descriptive word of a doc about types of fish, even if the word fish doesnt occur at all
+					-how much a doc is about the feature word (Weight)
+					
+			Document Fields
+				real docs are not just lsits of words
+					-logical units formed by sentences and paragraphs
+					-titles and headings that provide short summaries of the rest of the content
+
+				speical classes of the doc have custom sections
+					-every email contains sender and subject line
+
+		**for assignment could weight titl words higher
+		**could exclude author if they are rarely queried
+
+				all of these a re instance of doc fields
+					-sections ofd docs that carry semantic meaning
+
+					preference rules/weighting for doc fields can be inteegratied into ranking function
+
+
+			Extent lists
+				-an extent is a contiguous region of a document
+					-can manually specify (e.g title starts with one word and ends with another -> title starts at word 1 and ends at word 4 ->> extent(1,4) )
+						-subtitle(4,9)
+						-author(9,11)
+
+					can use this to distinguish which words are titles in specific fields (term position) and give them a higher weight ranking
+
+			Index ordering
+				-can also be ordered by score/weight other than ordered by number
+				
+			Other indexing challenges (in recommended reading, we wont cover them)
+				-compression and memory mngmt
+				-index update (new content being published or updated)
+					-new data
+					-updated data
+				-index merging - multiple indexes and merging into one
+				-doc deletion	- reveres of update problem
+				-distributed indexing - web search, web scale indexes -> cant be stored on single machine, must be distributed accross many machines at different locations e.g map reduce -> distributed memory and mngmt processing
+
+
+
 
 
