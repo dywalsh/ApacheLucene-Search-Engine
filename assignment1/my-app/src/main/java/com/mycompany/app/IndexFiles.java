@@ -16,7 +16,6 @@
  */
 package com.mycompany.app;
 
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,15 +49,15 @@ import org.apache.lucene.store.FSDirectory;
  * Run it with no command-line arguments for usage information.
  */
 public class IndexFiles {
-  
+
   private IndexFiles() {}
 
   /** Index all text files under a directory. */
   public static void main(String[] args) {
     String usage = "java org.apache.lucene.demo.IndexFiles"
-                 + " [-index INDEX_PATH] [-docs DOCS_PATH] [-update]\n\n"
-                 + "This indexes the documents in DOCS_PATH, creating a Lucene index"
-                 + "in INDEX_PATH that can be searched with SearchFiles";
+    + " [-index INDEX_PATH] [-docs DOCS_PATH] [-update]\n\n"
+    + "This indexes the documents in DOCS_PATH, creating a Lucene index"
+    + "in INDEX_PATH that can be searched with SearchFiles";
     String indexPath = "index";
     String docsPath = null;
     boolean create = true;
@@ -90,7 +89,8 @@ public class IndexFiles {
       System.out.println("Indexing to directory '" + indexPath + "'...");
 
       Directory dir = FSDirectory.open(Paths.get(indexPath));
-      Analyzer analyzer = new StandardAnalyzer();
+    //  Analyzer analyzer = new StandardAnalyzer();
+	  Analyzer analyzer = new CustomAnalyzer(); 
       IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
 
       if (create) {
@@ -168,15 +168,15 @@ public class IndexFiles {
   static void indexDoc(IndexWriter writer, Path file, long lastModified) throws IOException {
     try (InputStream stream = Files.newInputStream(file)) {
       // make a new, empty document
-      Document doc = new Document();
-      
+      ///Document doc = new Document();
+
       // Add the path of the file as a field named "path".  Use a
       // field that is indexed (i.e. searchable), but don't tokenize 
       // the field into separate words and don't index term frequency
       // or positional information:
-      Field pathField = new StringField("path", file.toString(), Field.Store.YES);
-      doc.add(pathField);
-      
+      ///Field pathField = new StringField("path", file.toString(), Field.Store.YES);
+      ///doc.add(pathField);
+
       // Add the last modified date of the file a field named "modified".
       // Use a LongPoint that is indexed (i.e. efficiently filterable with
       // PointRangeQuery).  This indexes to milli-second resolution, which
@@ -184,38 +184,126 @@ public class IndexFiles {
       // year/month/day/hour/minutes/seconds, down the resolution you require.
       // For example the long value 2011021714 would mean
       // February 17, 2011, 2-3 PM.
-      doc.add(new LongPoint("modified", lastModified));
-      
+      ///doc.add(new LongPoint("modified", lastModified));
+
       // Add the contents of the file to a field named "contents".  Specify a Reader,
       // so that the text of the file is tokenized and indexed, but not stored.
       // Note that FileReader expects the file to be in UTF-8 encoding.
       // If that's not the case searching for special characters will fail.
-     // doc.add(new TextField("contents", new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))));
-
+      ///doc.add(new TextField("contents", new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))));
       BufferedReader br = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
-      String temp;
-     // String pattern = "^.I\\s\\d";
-      while( (temp = br.readLine()) != null ){
-	//System.out.println(temp);
-	if(temp.substring(0,2).equals(".I")){
-	System.out.println(temp);
-	}
-	
-	
-      }
 
-      
-      if (writer.getConfig().getOpenMode() == OpenMode.CREATE) {
+      String temp = br.readLine();
+      Document doc;
+      String docType = "";
+
+
+      while(temp != null){
+        if(temp.substring(0,2).equals(".I")){
+          doc = new Document();
+          Field pathField = new StringField("path", temp, Field.Store.YES);
+          doc.add(pathField);
+          temp = br.readLine();
+          while(!(temp.substring(0,2).equals(".I"))){
+            if(temp.substring(0,2).equals(".T")){
+              docType = "Title";
+              temp = br.readLine();
+              
+            } else if(temp.substring(0,2).equals(".A")){
+              docType = "Author";
+              temp = br.readLine();
+            } else if(temp.substring(0,2).equals(".B")){
+              docType = "Bibliography";
+              temp = br.readLine();
+            } else if(temp.substring(0,2).equals(".W")){
+              docType = "Words";
+              temp = br.readLine();
+            }
+            //System.out.println(temp);
+            doc.add(new TextField(docType, temp, Field.Store.YES));
+            temp = br.readLine();
+            if(temp == null){
+              break;
+            }
+          }
+
+          if (writer.getConfig().getOpenMode() == OpenMode.CREATE) {
         // New index, so we just add the document (no old document can be there):
-        System.out.println("adding " + file);
-        writer.addDocument(doc);
-      } else {
+            System.out.println("adding " + file);
+            writer.addDocument(doc);
+          } else {
         // Existing index (an old copy of this document may have been indexed) so 
         // we use updateDocument instead to replace the old one matching the exact 
         // path, if present:
-        System.out.println("updating " + file);
-        writer.updateDocument(new Term("path", file.toString()), doc);
+            System.out.println("updating " + file);
+            writer.updateDocument(new Term("path", file.toString()), doc);
+          }
+
+        }
       }
+
+
+
+      
     }
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
