@@ -27,7 +27,7 @@ import java.util.Date;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.PrintWriter;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -119,14 +119,17 @@ public class SearchFiles {
     //QueryParser parser = new QueryParser(field, analyzer);
 	HashMap<String, Float> boostedScores = new HashMap<String, Float>();
 	boostedScores.put("Title", 0.65f);
-	boostedScores.put("Author", 0.5f);
-	boostedScores.put("Bibliography", 0.3f);
-	boostedScores.put("Words", 0.2f);
-	
+	boostedScores.put("Author", 0.04f);
+	boostedScores.put("Bibliography", 0.02f);
+	boostedScores.put("Words", 0.29f);
+	MultiFieldQueryParser parser = new MultiFieldQueryParser (
+        new String[]{"Title", "Author", "Bibliography", "Words"},
+        analyzer, boostedScores);
 	
 	String line=in.readLine();
 	String nextLine ="";
 	int queryNumber = 1;
+	PrintWriter writer = new PrintWriter("/home/dywalsh/Desktop/MCS/CS7IS3-IR/assignment1/cran/outputs.txt", "UTF-8");
     while (true) {
       if (queries == null && queryString == null) {                        // prompt the user
         System.out.println("Enter query: ");
@@ -160,9 +163,7 @@ public class SearchFiles {
 	  } 
   	  
 
-	 MultiFieldQueryParser parser = new MultiFieldQueryParser (
-        new String[]{"Title", "Author", "Bibliography", "Words"},
-        analyzer, boostedScores);
+	 
 
       Query query = parser.parse( QueryParser.escape( nextLine.trim() ) );
 
@@ -178,7 +179,7 @@ public class SearchFiles {
         System.out.println("Time: "+(end.getTime()-start.getTime())+"ms");
       }
 
-      doPagingSearch(queryNumber, in, searcher, query, hitsPerPage, raw, queries == null && queryString == null);
+      doPagingSearch(queryNumber, in, searcher, query, hitsPerPage, raw, queries == null && queryString == null, writer);
 	  queryNumber++;
 
       if (queryString != null) {
@@ -186,43 +187,10 @@ public class SearchFiles {
       }
     }
 
-	try {	 
-				File file = new File("/home/dywalsh/Desktop/MCS/CS7IS3-IR/assignment1/cran/outputs.txt");
-	 
-				// if file doesnt exists, then create it
-				if (!file.exists()) {
-					file.createNewFile();
-				}
-	 			
-				FileWriter fw = new FileWriter(file.getAbsoluteFile());
-				BufferedWriter bw = new BufferedWriter(fw);
-				bw.write(outputs.substring(1));
-				bw.close();
-	 
-				System.out.println("Done");
-	 
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+	
+writer.close();
     reader.close();
   }
-
-  public static int normalise(Float f){
-	Float result = 0f;
-	if(f >= 12.5f){
-		return 5;
-	}
-	else if(f < 12.5f && f >= 10f ){
-		return 4;
-	}
-	else if(f < 10f && f >= 8f ){
-		return 3;
-	}
-	else if(f < 8f && f >= 6f ){
-		return 2;
-	}
-	return 1;
-}
 
 	
 
@@ -237,13 +205,16 @@ public class SearchFiles {
    * 
    */
   public static void doPagingSearch(int queryNumber, BufferedReader in, IndexSearcher searcher, Query query, 
-                                     int hitsPerPage, boolean raw, boolean interactive) throws IOException {
+                                     int hitsPerPage, boolean raw, boolean interactive, PrintWriter writer) throws IOException {
  
     // Collect enough docs to show 5 pages
     TopDocs results = searcher.search(query, 5 * hitsPerPage);
+	int numTotalHits = Math.toIntExact(results.totalHits);
+	results = searcher.search(query, numTotalHits);
+	//System.out.println(numTotalHits +" "+ results.totalHits);
     ScoreDoc[] hits = results.scoreDocs;
     
-    int numTotalHits = Math.toIntExact(results.totalHits);
+   
    // System.out.println(numTotalHits + " total matching documents");
 
     int start = 0;
@@ -263,17 +234,24 @@ public class SearchFiles {
       
       end = Math.min(hits.length, start + hitsPerPage);
       
-      for (int i = start; i < end; i++) {
+      for (int i = start; i < numTotalHits; i++) {
         if (raw) {                              // output raw format
-          System.out.println("doc="+hits[i].doc+" score="+hits[i].score);
+         // System.out.println("doc="+hits[i].doc+" score="+hits[i].score);
           continue;
         }
 
         Document doc = searcher.doc(hits[i].doc);
         String path = doc.get("path");
         if (path != null) {
-          System.out.println(queryNumber + " 0 " + path.replace(".I ","") + " " +(i+1)+ " " + normalise(hits[i].score));
-		  outputs = outputs + "\n" + queryNumber + " 0 " + path.replace(".I ","") + " " + (i+1) + " " + normalise(hits[i].score) +" EXP";
+         // System.out.println(queryNumber + " 0 " + path.replace(".I ","") + " " +(i+1)+ " " + normalise(hits[i].score));
+		  //outputs = outputs + "\n" + queryNumber + " 0 " + path.replace(".I ","") + " " + (i+1) + " " + normalise(hits[i].score) +" EXP";
+		  System.out.println(queryNumber + " 0 " + path.replace(".I ","") + " " +(i+1)+ " " + hits[i].score);
+		 
+
+		// outputs = outputs + "\n" + queryNumber + " 0 " + path.replace(".I ","") + " " + (i+1) + " " + hits[i].score +" EXP";
+		  
+		writer.println(queryNumber+" 0 " + path.replace(".I ","") + " " + (i+1) + " " + hits[i].score +" EXP");
+
           String title = doc.get("title");
           if (title != null) {
             System.out.println("   Title: " + doc.get("title"));
