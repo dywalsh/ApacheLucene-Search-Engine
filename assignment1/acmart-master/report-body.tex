@@ -1,0 +1,76 @@
+
+\section{Introduction}
+This report focuses on utilising the Apache Lucene open-source information retrieval library. This library is written in the Java programming language and enables the user to use a range of methods to implement a fully functioning search engine.
+% Head 1
+\section{Design}
+\subsection{Initial Design}
+Using the sample code provided by Apache Lucene, I implemented a basic search engine. Unfortunately the time taken to set this up using maven was extremely long. Eventually I figured using various help websites and such to modify the pom.xml file to include all the required dependencies. Once I could successfully compile and build the sample java code, I began focusing on how I would modify it to be able to use the cranfield collection as an input.
+\\\\
+IndexFiles.java
+\\
+Seeing as the cranfield collection was organised very well. I decided to read each line and check if the line began with one of the 5 different tags (.I,.W,.A,.T,.B). My code was designed to create a new document everytime a new document id was recognised (.I). The following lines would then be parsed using regex to check if the line began with one of the remaing four tags. Depending on the matching tag, a textfield entry was added to the document with the line(s) following that tag, until another tag was matched. This allowed for my code to handle multiple lines of code for a single tag. Each textfield was added with the universal docType of "contents".
+\\\\
+SearchFiles.java
+\\
+Using the sample searchfiles java code and my newly modified IndexFiles java code to create a new index using the cranfield collection. I was able to query each collection.
+
+% Head 2
+\subsection{Improved Design}
+In order to accurately score data I decided to use the method suggested in the lecture and give different weights to each tag. This meant I needed to have different docTypes for textfields per document and not just a single "contents" docType. I re-wrote the IndexFiles.java code to reflect this design change. This also had to be adjusted in SearchFiles. instead of using a regular queryparser which was only capable of handling one doctype. I used the MultiFieldQueryParser, this was able to handle all docTypes I created for each textfield added to documents in the Index.
+\\\\
+The next task was to adjust the SearchFiles.java file to read in the cran.qry file which was provided in the cranfield collection. This meant reading in the files line by line and extracting both the query ID and the query itself. Initially I did not realise that the query ID was not correct and in ascending order, this had to be adjusted by having a count for each new query which was read by the bufferedReader.
+\\\\
+The query parser was unable to correctly handle non-alpha numerical characters and this was handled by using the .escape() method associated with QueryParser library.
+
+% Head 3
+\subsection{Final Implementation}
+In order for trec-eval to handle the scoring results of my search, the results needed to be written to a textfile in a standard format: {query number} 0 {ranking} {score} EXP.
+
+
+% Head 4
+\paragraph{Eavesdropping}
+
+\subsection{Basic Notations}
+
+
+
+\section{Simulator}
+
+
+\subsection{Problem Formulation}
+
+\section{Performance Evaluation}
+
+% Table
+\begin{table}%
+\caption{BM25 Scoring Type}
+\label{tab:one}
+\begin{minipage}{\columnwidth}
+\begin{center}
+\begin{tabular}{ll}
+  \toprule
+  num\_q     & 225\\
+  num\_ret   & 206336\\
+  num\_rel   & 1837\\
+  num\_rel\_ret   & 1767\\
+  map   & 0.4007\\
+  gm\_ap       & 0.2848\\
+  R\-prec     & 0.3718\\
+  bpref & 0.9637\\
+  recip\_rank    & 0.7859\\
+  \bottomrule
+\end{tabular}
+\end{center}
+\bigskip\centering
+\footnotesize\emph{Source:} Acquired by running .\/trec_eval \/home/ec2\-user/CS7IS3\-IR/assignment1/cran/QRelsCorrectedforTRECeval /home/ec2\-user/CS7IS3\-IR/assignment1/cran/outputs.txt 
+
+
+ 
+\end{minipage}
+\end{table}%
+
+
+\section{Conclusions}
+
+
+% Start of "Sample References" section

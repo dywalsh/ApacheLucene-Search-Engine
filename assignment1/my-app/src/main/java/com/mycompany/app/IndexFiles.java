@@ -13,6 +13,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ *As per the apache license:
+ *The original file was modified for the purposes of the CS7IS3 Assignment 1 by Dylan Walsh
  */
 package com.mycompany.app;
 
@@ -89,7 +92,6 @@ public class IndexFiles {
       System.out.println("Indexing to directory '" + indexPath + "'...");
 
       Directory dir = FSDirectory.open(Paths.get(indexPath));
-    //  Analyzer analyzer = new StandardAnalyzer();
 	  Analyzer analyzer = new CustomAnalyzer(); 
       IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
 
@@ -167,9 +169,6 @@ public class IndexFiles {
   /** Indexes a single document */
   static void indexDoc(IndexWriter writer, Path file, long lastModified) throws IOException {
     try (InputStream stream = Files.newInputStream(file)) {
-      // make a new, empty document
-      ///Document doc = new Document();
-
       // Add the path of the file as a field named "path".  Use a
       // field that is indexed (i.e. searchable), but don't tokenize 
       // the field into separate words and don't index term frequency
@@ -192,37 +191,34 @@ public class IndexFiles {
       // If that's not the case searching for special characters will fail.
       ///doc.add(new TextField("contents", new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))));
       BufferedReader br = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
-
-      String temp = br.readLine();
-      Document doc;
+      String currentLine = br.readLine();
+      Document document;
       String docType = "";
 
-
-      while(temp != null){
-        if(temp.substring(0,2).equals(".I")){
-          doc = new Document();
-          Field pathField = new StringField("path", temp, Field.Store.YES);
-          doc.add(pathField);
-          temp = br.readLine();
-          while(!(temp.substring(0,2).equals(".I"))){
-            if(temp.substring(0,2).equals(".T")){
+      while(currentLine != null){
+        if(currentLine.matches("(\\.I)( )(\\d)*")){
+          document = new Document();
+          Field pathField = new StringField("path", currentLine, Field.Store.YES);
+          document.add(pathField);
+          currentLine = br.readLine();
+          while(!(currentLine.matches("(\\.I)( )(\\d)*"))){	
+            if(currentLine.matches("(\\.T)")){
               docType = "Title";
-              temp = br.readLine();
+              currentLine = br.readLine();
               
-            } else if(temp.substring(0,2).equals(".A")){
+            } else if(currentLine.matches("(\\.A)")){
               docType = "Author";
-              temp = br.readLine();
-            } else if(temp.substring(0,2).equals(".B")){
-              docType = "Bibliography";
-              temp = br.readLine();
-            } else if(temp.substring(0,2).equals(".W")){
+              currentLine = br.readLine();
+            } else if(currentLine.matches("(\\.W)")){
               docType = "Words";
-              temp = br.readLine();
+              currentLine = br.readLine();
+            } else if(currentLine.matches("(\\.B)")){
+              docType = "Bibliography";
+              currentLine = br.readLine();
             }
-            //System.out.println(temp);
-            doc.add(new TextField(docType, temp, Field.Store.YES));
-            temp = br.readLine();
-            if(temp == null){
+            document.add(new TextField(docType, currentLine, Field.Store.YES));
+            currentLine = br.readLine();
+            if(currentLine == null){
               break;
             }
           }
@@ -230,13 +226,13 @@ public class IndexFiles {
           if (writer.getConfig().getOpenMode() == OpenMode.CREATE) {
         // New index, so we just add the document (no old document can be there):
             System.out.println("adding " + file);
-            writer.addDocument(doc);
+            writer.addDocument(document);
           } else {
         // Existing index (an old copy of this document may have been indexed) so 
         // we use updateDocument instead to replace the old one matching the exact 
         // path, if present:
             System.out.println("updating " + file);
-            writer.updateDocument(new Term("path", file.toString()), doc);
+            writer.updateDocument(new Term("path", file.toString()), document);
           }
 
         }
