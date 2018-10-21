@@ -88,7 +88,7 @@ public class SearchFiles {
 	boostedScores.put("Title", 0.65f);
 	boostedScores.put("Author", 0.04f);
 	boostedScores.put("Bibliography", 0.02f);
-	boostedScores.put("Words", 0.29f);
+	boostedScores.put("Words", 0.35f);
 	MultiFieldQueryParser parser = new MultiFieldQueryParser (
         new String[]{"Title", "Author", "Bibliography", "Words"},
         analyzer, boostedScores);
