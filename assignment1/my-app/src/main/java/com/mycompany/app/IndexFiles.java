@@ -92,7 +92,7 @@ public class IndexFiles {
       System.out.println("Indexing to directory '" + indexPath + "'...");
 
       Directory dir = FSDirectory.open(Paths.get(indexPath));
-	  Analyzer analyzer = new CustomAnalyzer(); 
+	  Analyzer analyzer = new DylansAnalyzer(); 
       IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
 
       if (create) {
