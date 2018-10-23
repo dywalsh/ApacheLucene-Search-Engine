@@ -1,7 +1,7 @@
 # Apache Lucene Search Engine
 
 Here is an implementation of the Apache Lucene Library, written in Java. This search engine creates an index of the cranfield collection (IndexFiles.java), which allows you to query this index (SearchFiles.java).
-It works off the basic Apache Lucene tutorials, with specific alerterations and additions to the code to improvement the search engine for my needs (accuracy).
+It works off the basic Apache Lucene tutorials, with specific alerterations and additions to the code to improve the search engine for my needs (accuracy).
 
 Trec-eval can then be used to compare the scores of this search engine with the recommended scores and see the accuracy degree of this search engine.
 
