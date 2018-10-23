@@ -21,7 +21,7 @@ GCC 7.3.0
 ```
 
 ### Building, Compiling, Creating the Index, Querying the Index and Using Trec-eval to compare scores.
-
+```
 1. Clone this repository to your designated directory.
 2. Using a terminal - cd the cloned directory.
 3. Run "mvn clean"
@@ -32,3 +32,4 @@ GCC 7.3.0
    SearchFiles stores the scoring -output.txt in {path-to-this-directory}/cran/outputs.txt
 7. cd {path-to-this-directory}/trec-eval.8.1/
 8. Run ./trec_eval {path-to-this-directory}/cran/QRelsCorrectedforTRECeval {path-to-this-directory}/cran/outputs.txt
+```
